@@ -5,6 +5,17 @@ const xml2js = require('xml2js');
 const app = express();
 const parser = new xml2js.Parser();
 
+// CORS headers - MUST be first!
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 // Middleware to accept XML and JSON
 app.use(bodyParser.text({ type: 'application/xml' }));
 app.use(bodyParser.json());
@@ -58,14 +69,6 @@ app.post('/api/upload', async (req, res) => {
 // Serve leaderboard to frontend
 app.get('/api/leaderboard', (req, res) => {
   res.json(leaderboard);
-});
-
-// CORS headers for frontend (add this if frontend is on different domain)
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  next();
 });
 
 const PORT = process.env.PORT || 3000;
