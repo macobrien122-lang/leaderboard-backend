@@ -3,7 +3,7 @@ const axios = require('axios');
 
 // Configuration
 const XML_PATH = 'C:/Users/mobrien/Downloads/FulfillmentChallenge/FulfillmentChallenge/EvansDistFulfillmentChallenge.xml';
-const BACKEND_URL = 'http://localhost:3000/api/upload';
+const BACKEND_URL = 'https://leaderboard-backend-qpmb.onrender.com/api/upload';
 const POLL_INTERVAL = 5000; // 5 seconds
 
 // Track last sync result
