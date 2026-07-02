@@ -1,16 +1,17 @@
 {
-  "name": "leaderboard-sync",
+  "name": "leaderboard-backend",
   "version": "1.0.0",
-  "description": "Local leaderboard sync backend and script",
+  "description": "Girl Scouts conference leaderboard backend",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "sync": "node sync-scores.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
+    "@supabase/supabase-js": "^2.45.0",
+    "axios": "^1.6.2",
     "body-parser": "^1.20.2",
-    "xml2js": "^0.6.2",
-    "axios": "^1.6.2"
+    "express": "^4.18.2",
+    "xml2js": "^0.6.2"
   }
 }
