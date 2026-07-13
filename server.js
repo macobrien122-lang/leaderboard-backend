@@ -19,8 +19,11 @@ if (SUPABASE_URL && SUPABASE_SERVICE_KEY) {
   console.warn('⚠ Supabase env vars missing — running in memory-only mode');
 }
 
-// ── CORS (must be first) ──
+// ── Security headers (must be first) ──
 app.use((req, res, next) => {
+  res.removeHeader('X-Powered-By');
+  res.header('X-Content-Type-Options', 'nosniff');
+  res.header('Cache-Control', 'public, max-age=60');
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
@@ -124,6 +127,46 @@ app.post('/api/upload', async (req, res) => {
 // ── Serve leaderboard to frontend ──
 app.get('/api/leaderboard', (req, res) => {
   res.json(leaderboard);
+});
+
+// ── Serve photos from Supabase ──
+app.get('/api/photos/list', async (req, res) => {
+  if (!supabase) {
+    return res.json([]);
+  }
+  try {
+    const { data, error } = await supabase
+      .from('photos')
+      .select('*')
+      .order('uploaded_at', { ascending: false });
+    if (error) throw error;
+    res.json(data || []);
+  } catch (err) {
+    console.error('✗ Failed to list photos:', err.message);
+    res.status(500).json({ error: 'Failed to load photos' });
+  }
+});
+
+// ── Delete photo from Supabase ──
+app.post('/api/photos/delete', async (req, res) => {
+  if (!supabase) {
+    return res.status(400).json({ error: 'Supabase not configured' });
+  }
+  const { id } = req.body;
+  if (!id) {
+    return res.status(400).json({ error: 'Missing photo id' });
+  }
+  try {
+    const { error } = await supabase
+      .from('photos')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (err) {
+    console.error('✗ Failed to delete photo:', err.message);
+    res.status(500).json({ error: 'Failed to delete photo' });
+  }
 });
 
 const PORT = process.env.PORT || 3000;
